@@ -13,9 +13,9 @@
 
           <form class="col-lg-12">
             <div class="input-group" style="width:340px;text-align:center;margin:0 auto;">
-            <input class="form-control input-md" title="Don't worry. Your address data won't be stored anywhere in our database" placeholder="Enter your address" type="text">
+            <input class="form-control input-md" title="Don't worry. Your address data won't be stored anywhere in our database" placeholder="Enter your address" type="text" id="address" value="Geocode" >
               <span class="input-group-btn">
-                <a href="#mapModal" class="btn btn-md btn-primary" type="button" data-toggle="modal" data-target="#mapModal">Get My Address</a></span>
+                <a href="#mapModal" class="btn btn-md btn-primary" type="button" data-toggle="modal" data-target="#mapModal" onclick="codeAddress()">Get My Address</a></span>
             </div>
           </form>
         </div>
@@ -28,7 +28,7 @@
                         <h2 class="modal-title" id="myModalLabel">New Product Announcement</h2>
                       </div>
                       <div class="modal-body">
-                        <iframe width="560" height="315" src="http://www.youtube.com/embed/cJr5tJhg-0g" frameborder="0" allowfullscreen id="videoAnnouncement" ></iframe>
+                        <div id="map-canvas"></div>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -55,8 +55,46 @@
 {% endblock %}
 
 {% block bottomscript %}
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   <script type="text/javascript">
         window.user = {{user|json|safe}};
         window.modules = {{modules|json|safe}};
+  </script>
+  <script type="text/javascript">
+    var map, geocoder;
+
+    function initialize() {
+      var mapOptions = {
+        zoom: 11,
+        center: new google.maps.LatLng(40.78013, -73.79871),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+
+
+       map = new google.maps.Map(document.getElementById('map-canvas'),
+          mapOptions);
+
+
+      geocoder = new google.maps.Geocoder()
+
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+    function codeAddress() {
+      var address = document.getElementById('address').value;
+      geocoder.geocode( { 'address': address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          map.setCenter(results[0].geometry.location);
+          var marker = new google.maps.Marker({
+              map: map,
+              position: results[0].geometry.location
+          });
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    }
+
   </script>
 {% endblock %}

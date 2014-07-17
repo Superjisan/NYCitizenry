@@ -84,3 +84,9 @@ h1 {
 .v-center {
   margin-top:7%;
 }
+
+#map-canvas {
+    height: 200px;
+    margin: 0px;
+    padding: 0px
+}
