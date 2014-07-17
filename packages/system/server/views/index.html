@@ -15,7 +15,8 @@
             <div class="input-group" style="width:340px;text-align:center;margin:0 auto;">
             <input class="form-control input-md" title="Don't worry. Your address data won't be stored anywhere in our database" placeholder="Enter your address" type="text" id="address" value="Geocode" >
               <span class="input-group-btn">
-                <a href="#mapModal" class="btn btn-md btn-primary" type="button" data-toggle="modal" data-target="#mapModal" onclick="codeAddress()">Get My Address</a></span>
+                <a href="#mapModal" class="btn btn-md btn-primary" type="button" data-toggle="modal" data-target="#mapModal" onclick="
+                setTimeout(codeAddress(), 500)" id="getAddress">Get My Address</a></span>
             </div>
           </form>
         </div>
@@ -27,9 +28,9 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h2 class="modal-title" id="myModalLabel">New Product Announcement</h2>
                       </div>
-                      <div class="modal-body">
+
                         <div id="map-canvas"></div>
-                      </div>
+
                       <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
@@ -62,38 +63,55 @@
   </script>
   <script type="text/javascript">
     var map, geocoder;
+    var getAddressInput = document.getElementById('address')
 
     function initialize() {
+
+
+      geocoder = new google.maps.Geocoder()
+
+
       var mapOptions = {
-        zoom: 11,
+        zoom: 10,
         center: new google.maps.LatLng(40.78013, -73.79871),
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
-
-
        map = new google.maps.Map(document.getElementById('map-canvas'),
           mapOptions);
 
 
-      geocoder = new google.maps.Geocoder()
+
+      google.maps.event.trigger(map,'resize');
+      map.setZoom( map.getZoom() );
+
+      google.maps.event.addListener(map, "idle", function(){
+                google.maps.event.trigger(map, 'resize');
+            });
 
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);
 
+
     function codeAddress() {
-      var address = document.getElementById('address').value;
-      geocoder.geocode( { 'address': address}, function(results, status) {
+        var address = document.getElementById('address').value;
+        geocoder.geocode( { 'address': address}, function(results, status){
         if (status == google.maps.GeocoderStatus.OK) {
-          map.setCenter(results[0].geometry.location);
+
           var marker = new google.maps.Marker({
               map: map,
               position: results[0].geometry.location
           });
+          map.setCenter(marker.getPosition());
+
+          google.maps.event.trigger(map,'resize');
+          map.setZoom(16);
+
         } else {
           alert('Geocode was not successful for the following reason: ' + status);
         }
       });
+
     }
 
   </script>
