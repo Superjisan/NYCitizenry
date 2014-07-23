@@ -1,9 +1,8 @@
 'use strict';
 
 var mean = require('meanio');
-var apiKeys = require('./apiKeys');
+var apiKeys = require('../../apiKeys');
 var NYTDistricts = require('nytdistricts');
-var nytdistricts = var nytAPIkey
 var nytAPIkey = apiKeys.nytAPIkey;
 var nytdistricts = new NYTDistricts(nytAPIkey);
 
@@ -44,8 +43,8 @@ exports.whichDistrict = function(req,res){
 
     nytdistricts.getCityCouncilDistrict(lattitude,longitude, function(err,data){
       if(err) throw err;
-      console.log("my City Council district: ", data)
-      res.json(200, data)
-    })
+      console.log('my City Council district: ', data);
+      res.json(200, data);
+    });
 
-}
+};
